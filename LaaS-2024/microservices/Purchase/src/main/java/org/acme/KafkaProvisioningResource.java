@@ -67,23 +67,4 @@ public class KafkaProvisioningResource {
                 .onItem().transform(purchase -> purchase != null ? Response.ok(purchase) : Response.status(Response.Status.NOT_FOUND)) 
                 .onItem().transform(ResponseBuilder::build); 
     }
-
-    /* TODO: test this */
-    @GET
-    @Path("{loyaltycardid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Multi<Purchase> getPurchasesByLoyaltyCardId(@PathParam("loyaltycardid") Long loyaltycardid) {
-        return client.query("SELECT * FROM Purchases WHERE loyaltycardid = " + loyaltycardid)
-                    .execute()
-                    .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
-                    .onItem().transform(row -> new Purchase(
-                        row.getLong("id"),
-                        row.getLocalDateTime("DateTime"),
-                        row.getFloat("Price"),
-                        row.getString("Product"),
-                        row.getString("Supplier"),
-                        row.getString("shopname"),
-                        row.getLong("loyaltycardid")
-                    ));
-    }
 }
