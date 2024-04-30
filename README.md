@@ -6,8 +6,8 @@ Dependencies
 
 ## TODOS
 - [x] Customer microservice can create customer
-- [ ] Create shops
-- [ ] Create loyaltycards and link between customer and shops
+- [x] Create shops
+- [x] Create loyaltycards and link between customer and shops
 - [ ] Consume purchase events and put in database
 - [ ] Discountcoupon gets purchase events and analyse them, push message coupon
 - [ ] Same for Cross selling

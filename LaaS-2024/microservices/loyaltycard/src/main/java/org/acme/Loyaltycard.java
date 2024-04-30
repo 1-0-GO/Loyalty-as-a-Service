@@ -16,15 +16,11 @@ public class Loyaltycard {
 	    public Loyaltycard() {
 	    }
 
-	
-
 		public Loyaltycard(Long id, Long idCustomer, Long idShop) {
 			this.id = id;
 			this.idCustomer = idCustomer;
 			this.idShop = idShop;
 		}
-
-
 
 		@Override
 		public String toString() {
