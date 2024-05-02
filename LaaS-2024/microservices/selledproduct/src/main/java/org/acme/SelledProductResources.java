@@ -1,5 +1,6 @@
 package org.acme;
 
+import java.util.List;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import jakarta.ws.rs.Consumes;
@@ -10,20 +11,52 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
-
 @Path("SelledProduct")
 public class SelledProductResources {
-    
+
     @Inject
-    @Channel("selled-product")
-    Emitter<SelledProduct> recommendEmitter;
+    @Channel("soldProductsbyCoupon")
+    Emitter<String> soldProductsbyCouponEmitter;
+
+    @Inject
+    @Channel("soldProductsbyLocation")
+    Emitter<String> soldProductsbyLocationEmitter;
+
+    @Inject
+    @Channel("soldProductsbyShop")
+    Emitter<String> soldProductsbyShopEmitter;
+
+    @Inject
+    @Channel("soldProductsbyLoyaltyCard")
+    Emitter<String> soldProductsbyLoyaltyCardEmitter;
+
+    @Inject
+    @Channel("soldProductsbyCustomer")
+    Emitter<String> soldProductsbyCustomerEmitter;
 
     @POST
     @Path("/emit")
-    @Consumes(MediaType.APPLICATION_JSON) // Accept DiscountCoupon in JSON format
-    @Produces(MediaType.TEXT_PLAIN) // Return plain text response
-    public Response emitCoupon(SelledProduct selledProduct) {
-        recommendEmitter.send(selledProduct);
-        return Response.ok("Coupon emitted").build();
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response emitSelledProduct(List<SelledProduct> selledProducts) {
+        for (SelledProduct product : selledProducts) {
+            var soldProductsbyCoupon = product.purchase.product + "-" + product.coupon;
+            var soldProductsbyLocation = product.purchase.product + "-" + product.location;
+            var soldProductsbyShop = product.purchase.product + "-" + product.shop;
+            var soldProductsbyLoyaltyCard = product.purchase.product + "-" + product.loyaltyCard_id;
+            var soldProductsbyCustomer = product.purchase.product + "-" + product.customer;
+
+            // Emitting messages to respective topics
+            sendMessageToTopic(soldProductsbyCoupon, soldProductsbyCouponEmitter);
+            sendMessageToTopic(soldProductsbyLocation, soldProductsbyLocationEmitter);
+            sendMessageToTopic(soldProductsbyShop, soldProductsbyShopEmitter);
+            sendMessageToTopic(soldProductsbyLoyaltyCard, soldProductsbyLoyaltyCardEmitter);
+            sendMessageToTopic(soldProductsbyCustomer, soldProductsbyCustomerEmitter);
+        }
+        return Response.ok("Products processed").build();
+    }
+
+    private void sendMessageToTopic(String message, Emitter<String> emitter) {
+        emitter.send(message);
     }
 }
