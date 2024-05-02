@@ -67,4 +67,10 @@ public class KafkaProvisioningResource {
                 .onItem().transform(purchase -> purchase != null ? Response.ok(purchase) : Response.status(Response.Status.NOT_FOUND)) 
                 .onItem().transform(ResponseBuilder::build); 
     }
+
+    @GET
+    @Path("loyalty/{loyaltyCardId}")
+    public Multi<Purchase> getByLoyaltyCardId(@PathParam("loyaltyCardId") Long loyaltyCardId) {
+        return Purchase.findByLoyaltyCardId(client, loyaltyCardId);
+    }
 }

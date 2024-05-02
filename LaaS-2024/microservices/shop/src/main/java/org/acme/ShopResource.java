@@ -32,10 +32,10 @@ public class ShopResource {
         // In a production environment this configuration SHOULD NOT be used
         client.query("DROP TABLE IF EXISTS Shops").execute()
         .flatMap(r -> client.query("CREATE TABLE Shops (id SERIAL PRIMARY KEY, name TEXT NOT NULL, location TEXT NOT NULL)").execute())
-        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('client1','Lisbon')").execute())
-        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('client2','Setúbal')").execute())
-        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('client3','OPorto')").execute())
-        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('client4','Faro')").execute())
+        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('shop1','Lisbon')").execute())
+        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('shop2','Setúbal')").execute())
+        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('shop3','OPorto')").execute())
+        .flatMap(r -> client.query("INSERT INTO Shops (name,location) VALUES ('shop4','Faro')").execute())
         .await().indefinitely();
     }
     

@@ -65,4 +65,9 @@ public class Purchase
                 .onItem().transform(iterator -> iterator.hasNext() ? from(iterator.next()) : null); 
     }
 
+    public static Multi<Purchase> findByLoyaltyCardId(MySQLPool client, Long loyaltyCardId) {
+        return client.preparedQuery("SELECT id, DateTime, Price, Product , Supplier, shopname, loyaltycardid FROM Purchases WHERE loyaltycardid = ?").execute(Tuple.of(loyaltyCardId))
+                .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
+                .onItem().transform(Purchase::from);
+    }
 }

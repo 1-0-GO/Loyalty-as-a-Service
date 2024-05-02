@@ -11,19 +11,19 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 
-@Path("DiscountCoupon")
-public class DiscountCouponResources {
+@Path("SelledProduct")
+public class SelledProductResources {
     
     @Inject
-    @Channel("discount-coupon")
-    Emitter<DiscountCoupon> couponEmitter;
+    @Channel("selled-product")
+    Emitter<SelledProduct> recommendEmitter;
 
     @POST
     @Path("/emit")
     @Consumes(MediaType.APPLICATION_JSON) // Accept DiscountCoupon in JSON format
     @Produces(MediaType.TEXT_PLAIN) // Return plain text response
-    public Response emitCoupon(DiscountCoupon discountCoupon) {
-        couponEmitter.send(discountCoupon);
+    public Response emitCoupon(SelledProduct selledProduct) {
+        recommendEmitter.send(selledProduct);
         return Response.ok("Coupon emitted").build();
     }
 }
