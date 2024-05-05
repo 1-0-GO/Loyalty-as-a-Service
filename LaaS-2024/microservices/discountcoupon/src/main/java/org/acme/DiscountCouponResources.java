@@ -23,7 +23,11 @@ public class DiscountCouponResources {
     @Consumes(MediaType.APPLICATION_JSON) // Accept DiscountCoupon in JSON format
     @Produces(MediaType.TEXT_PLAIN) // Return plain text response
     public Response emitCoupon(DiscountCoupon discountCoupon) {
-        couponEmitter.send(discountCoupon);
-        return Response.ok("Coupon emitted").build();
+        try {
+            couponEmitter.send(discountCoupon);
+            return Response.ok("Coupon emitted").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Error processing coupon: " + e.getMessage()).build();
+        }
     }
 }
