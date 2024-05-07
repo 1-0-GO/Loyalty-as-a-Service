@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 # Define the URL of the endpoint
-url = 'http://localhost:8080/DiscountCoupon/emit'
+url = 'http://localhost:8080/CrossSell/emit'
 
 # Construct the JSON payload
 payload = {
