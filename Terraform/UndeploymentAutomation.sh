@@ -1,5 +1,6 @@
 #!/bin/bash
 
+start=$(date +%s)
 
 source ./access.sh
 
@@ -47,3 +48,7 @@ cd ..
 cd Kafka-Terraform
 terraform destroy -auto-approve
 cd ..
+
+end=$(date +%s)
+duration=$(( end - start ))
+echo "Total execution time: $duration seconds."

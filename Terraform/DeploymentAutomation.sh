@@ -1,5 +1,7 @@
 #!/bin/bash
 
+start=$(date +%s)
+
 source ./access.sh
 
 # # #Terraform - RDS
@@ -199,3 +201,7 @@ terraform state show aws_db_instance.LaasDB |grep address
 terraform state show aws_db_instance.LaasDB |grep port
 echo
 cd ..
+
+end=$(date +%s)
+duration=$(( end - start ))
+echo "Total execution time: $duration seconds."
