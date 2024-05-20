@@ -176,3 +176,78 @@ addressKonga="$(terraform state show aws_instance.exampleInstallKonga |grep publ
 echo "http://"$addressKonga":1337/"
 echo
 cd ..
+
+
+# Create all KONG services and routes
+#
+#kong_admin_url="http://"$addressKong":8001"
+#
+## Create customer service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=customer-service' \
+# --data 'url=http://'"$addressCustomerMS"':8080'
+#
+#curl -i -X POST \
+# --url $kong_admin_url/services/customer-service/routes \
+# --data 'paths[]=/Customer*'
+#
+## Create shop service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=shop-service' \
+# --data 'url=http://'"$addressShopMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/shop-service/routes \
+#    --data 'paths[]=/Shop*'
+#
+## Create loyaltycard service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=loyaltycard-service' \
+# --data 'url=http://'"$addressLoyaltycardMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/loyaltycard-service/routes \
+#    --data 'paths[]=/Loyaltycard*'
+#
+## Create discountcoupon service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=discountcoupon-service' \
+# --data 'url=http://'"$addressDiscountcouponMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/discountcoupon-service/routes \
+#    --data 'paths[]=/Discountcoupon*'
+#
+## Create crosssell service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=crosssell-service' \
+# --data 'url=http://'"$addressCrosssellMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/crosssell-service/routes \
+#    --data 'paths[]=/Crosssell*'
+#
+## Create selledproduct service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=selledproduct-service' \
+# --data 'url=http://'"$addressSelledproductMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/selledproduct-service/routes \
+#    --data 'paths[]=/Selledproduct*'
+#
+## Create purchase service and route
+#curl -i -X POST \
+# --url $kong_admin_url/services/ \
+# --data 'name=purchase-service' \
+# --data 'url=http://'"$addressPurchaseMS"':8080'
+#
+#curl -i -X POST \
+#    --url $kong_admin_url/services/purchase-service/routes \
+#    --data 'paths[]=/Purchase*'
