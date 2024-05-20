@@ -179,30 +179,30 @@ cd ..
 
 
 # Create all KONG services and routes
-kong_admin_url="http://"$addressKong":8001"
-create_service_and_route() {
-  local service_name=$1
-  local service_url=$2
-  local route_path=$3
-
-  echo "Creating service: $service_name"
-  curl -i -X POST \
-    --url $kong_admin_url/services/ \
-    --data "name=$service_name" \
-    --data "url=$service_url"
-
-  echo "Creating route for service: $service_name"
-  curl -i -X POST \
-    --url $kong_admin_url/services/$service_name/routes \
-    --data-urlencode "paths[]=$route_path" \
-    --data "strip_path=false"
-}
-
-# Create services and routes
-create_service_and_route "customer-service" "http://$addressCustomerMS:8080" "/Customer(/.*)?"
-create_service_and_route "purchase-service" "http://$addressPurchaseMS:8080" "/Purchase(/.*)?"
-create_service_and_route "shop-service" "http://$addressShopMS:8080" "/Shop(/.*)?"
-create_service_and_route "loyaltycard-service" "http://$addressLoyaltycardMS:8080" "/Loyaltycard(/.*)?"
-create_service_and_route "discountcoupon-service" "http://$addressDiscountcouponMS:8080" "/Discountcoupon(/.*)?"
-create_service_and_route "crosssell-service" "http://$addressCrosssellMS:8080" "/Crosssell(/.*)?"
-create_service_and_route "selledproduct-service" "http://$addressSelledproductMS:8080" "/Selledproduct(/.*)?"
+#kong_admin_url="http://"$addressKong":8001"
+#create_service_and_route() {
+#  local service_name=$1
+#  local service_url=$2
+#  local route_path=$3
+#
+#  echo "Creating service: $service_name"
+#  curl -i -X POST \
+#    --url $kong_admin_url/services/ \
+#    --data "name=$service_name" \
+#    --data "url=$service_url"
+#
+#  echo "Creating route for service: $service_name"
+#  curl -i -X POST \
+#    --url $kong_admin_url/services/$service_name/routes \
+#    --data-urlencode "paths[]=$route_path" \
+#    --data "strip_path=false"
+#}
+#
+## Create services and routes
+#create_service_and_route "customer-service" "http://$addressCustomerMS:8080" "/Customer(/.*)?"
+#create_service_and_route "purchase-service" "http://$addressPurchaseMS:8080" "/Purchase(/.*)?"
+#create_service_and_route "shop-service" "http://$addressShopMS:8080" "/Shop(/.*)?"
+#create_service_and_route "loyaltycard-service" "http://$addressLoyaltycardMS:8080" "/Loyaltycard(/.*)?"
+#create_service_and_route "discountcoupon-service" "http://$addressDiscountcouponMS:8080" "/Discountcoupon(/.*)?"
+#create_service_and_route "crosssell-service" "http://$addressCrosssellMS:8080" "/Crosssell(/.*)?"
+#create_service_and_route "selledproduct-service" "http://$addressSelledproductMS:8080" "/Selledproduct(/.*)?"
