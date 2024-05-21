@@ -30,28 +30,22 @@ public class SelledProductResources {
     @Channel("soldProductsbyLoyaltyCard")
     Emitter<String> soldProductsbyLoyaltyCardEmitter;
 
-    @Inject
-    @Channel("soldProductsbyCustomer")
-    Emitter<String> soldProductsbyCustomerEmitter;
-
     @POST
     @Path("/emit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response emitSelledProduct(List<SelledProduct> selledProducts) {
         for (SelledProduct product : selledProducts) {
-            var soldProductsbyCoupon = product.purchase.product + "-" + product.coupon;
-            var soldProductsbyLocation = product.purchase.product + "-" + product.location;
-            var soldProductsbyShop = product.purchase.product + "-" + product.shop;
-            var soldProductsbyLoyaltyCard = product.purchase.product + "-" + product.loyaltyCard_id;
-            var soldProductsbyCustomer = product.purchase.product + "-" + product.customer;
+            var soldProductsbyCoupon = product.product + "-" + product.coupon;
+            var soldProductsbyLocation = product.product + "-" + product.location;
+            var soldProductsbyShop = product.product + "-" + product.shop;
+            var soldProductsbyLoyaltyCard = product.product + "-" + product.loyaltyCard_id;
 
             // Emitting messages to respective topics
             sendMessageToTopic(soldProductsbyCoupon, soldProductsbyCouponEmitter);
             sendMessageToTopic(soldProductsbyLocation, soldProductsbyLocationEmitter);
             sendMessageToTopic(soldProductsbyShop, soldProductsbyShopEmitter);
             sendMessageToTopic(soldProductsbyLoyaltyCard, soldProductsbyLoyaltyCardEmitter);
-            sendMessageToTopic(soldProductsbyCustomer, soldProductsbyCustomerEmitter);
         }
         return Response.ok("Products processed").build();
     }
