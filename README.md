@@ -12,3 +12,9 @@ Dependencies
 - [ ] Discountcoupon gets purchase events and analyse them, push message coupon
 - [ ] Same for Cross selling
 - [ ] same for 
+
+
+test docker local
+./mvnw clean package
+docker image ls -a    
+docker run -d --name crosssell -p 8080:8080 tweekzio/crosssell:1.0.0-SNAPSHOT
