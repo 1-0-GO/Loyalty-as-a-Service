@@ -36,13 +36,11 @@ public class SelledProductResources {
     @Produces(MediaType.TEXT_PLAIN)
     public Response emitSelledProduct(List<SelledProduct> selledProducts) {
         for (SelledProduct product : selledProducts) {
-            var soldProductsbyCoupon = product.product + "-" + product.coupon;
             var soldProductsbyLocation = product.product + "-" + product.location;
             var soldProductsbyShop = product.product + "-" + product.shop;
             var soldProductsbyLoyaltyCard = product.product + "-" + product.loyaltyCard_id;
 
             // Emitting messages to respective topics
-            sendMessageToTopic(soldProductsbyCoupon, soldProductsbyCouponEmitter);
             sendMessageToTopic(soldProductsbyLocation, soldProductsbyLocationEmitter);
             sendMessageToTopic(soldProductsbyShop, soldProductsbyShopEmitter);
             sendMessageToTopic(soldProductsbyLoyaltyCard, soldProductsbyLoyaltyCardEmitter);
