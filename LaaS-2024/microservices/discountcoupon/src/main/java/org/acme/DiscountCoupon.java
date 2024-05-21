@@ -11,6 +11,9 @@ public class DiscountCoupon {
     public String loyaltyCard_id;
     public String shop;
 
+    public DiscountCoupon() {
+    }
+
     public DiscountCoupon(String loyaltyCard_id, List<Purchase> purchases) {
         this.discount = (float) 0.2;
         this.expiryDate = java.time.LocalDateTime.now().plusDays(30);

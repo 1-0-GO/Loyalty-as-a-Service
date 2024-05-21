@@ -7,6 +7,9 @@ public class CrossSell {
     public String loyaltyCard_id;
     public String shop;
 
+    public CrossSell() {
+    }
+
     public CrossSell(String loyaltyCard_id, List<Purchase> purchases) {
         this.loyaltyCard_id = loyaltyCard_id;
         this.shop = analyse(purchases);

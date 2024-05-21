@@ -8,6 +8,9 @@ public class Purchase {
     public String loyaltyCard_id;
     public String product;
 
+    public Purchase() {
+    }
+
     public Purchase(String product, String loyaltyCard_id, java.time.LocalDateTime TimeStamp, float price, String shop, String location, String coupon) {
         this.TimeStamp = TimeStamp;
         this.price = price;
