@@ -15,6 +15,8 @@ import jakarta.ws.rs.core.MediaType;
 @Path("Customer")
 public class CustomerResource {
 
+    private static long currentId = 0;
+
     @Inject
     io.vertx.mutiny.mysqlclient.MySQLPool client;
     
@@ -54,7 +56,9 @@ public class CustomerResource {
      
     @POST
     public Uni<Response> create(Customer customer) {
-        return customer.save(client , customer.name , customer.FiscalNumber , customer.location)
+        currentId++;
+        Customer newCustomer = new Customer(currentId, customer.name, customer.location, customer.FiscalNumber);
+        return customer.save(client , newCustomer.name , newCustomer.FiscalNumber , newCustomer.location)
                 .onItem().transform(id -> URI.create("/customer/" + id))
                 .onItem().transform(uri -> Response.created(uri).build());
     }
