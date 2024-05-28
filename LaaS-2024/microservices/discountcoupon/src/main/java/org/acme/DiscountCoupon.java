@@ -8,17 +8,17 @@ import java.util.Map;
 public class DiscountCoupon {
     public float discount;
     public java.time.LocalDateTime expiryDate;
-    public String loyaltyCard_id;
-    public String shop;
+    public Long loyaltyCard_id;
+    public String shop_name;
 
     public DiscountCoupon() {
     }
 
-    public DiscountCoupon(String loyaltyCard_id, List<Purchase> purchases) {
+    public DiscountCoupon(Long loyaltyCard_id, List<Purchase> purchases) {
         this.discount = (float) 0.2;
         this.expiryDate = java.time.LocalDateTime.now().plusDays(30);
         this.loyaltyCard_id = loyaltyCard_id;
-        this.shop = analyse(purchases);
+        this.shop_name = analyse(purchases);
     }
 
 
@@ -28,7 +28,7 @@ public class DiscountCoupon {
 
         // Iterate over purchases for each loyalty card
         for (Purchase purchase : purchases) {
-            String shopName = purchase.shop;
+            String shopName = purchase.shop_name;
             
             // Increment count for the shop
             shopCounts.put(shopName, shopCounts.getOrDefault(shopName, 0) + 1);

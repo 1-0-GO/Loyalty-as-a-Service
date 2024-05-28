@@ -36,8 +36,8 @@ public class SelledProductResources {
     @Produces(MediaType.TEXT_PLAIN)
     public Response emitSelledProduct(List<SelledProduct> selledProducts) {
         for (SelledProduct product : selledProducts) {
-            var soldProductsbyLocation = product.product + "-" + product.location;
-            var soldProductsbyShop = product.product + "-" + product.shop;
+            var soldProductsbyLocation = product.product + "-" + product.supplier;
+            var soldProductsbyShop = product.product + "-" + product.shop_name;
             var soldProductsbyLoyaltyCard = product.product + "-" + product.loyaltyCard_id;
 
             // Emitting messages to respective topics
