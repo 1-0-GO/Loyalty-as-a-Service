@@ -22,6 +22,8 @@ public class ShopResource {
     @ConfigProperty(name = "myapp.schema.create", defaultValue = "true") 
     boolean schemaCreate ;
 
+    private static long currentId = 0;
+
     void config(@Observes StartupEvent ev) {
         if (schemaCreate) {
             initdb();
@@ -54,7 +56,9 @@ public class ShopResource {
      
     @POST
     public Uni<Response> create(Shop shop) {
-        return shop.save(client , shop.name , shop.location)
+        currentId++;
+        Shop newShop = new Shop(currentId, shop.name, shop.location);
+        return shop.save(client , newShop.name , newShop.location)
                 .onItem().transform(id -> URI.create("/shop/" + id))
                 .onItem().transform(uri -> Response.created(uri).build());
     }

@@ -21,6 +21,8 @@ public class LoyaltycardResource {
     @Inject
     @ConfigProperty(name = "myapp.schema.create", defaultValue = "true") 
     boolean schemaCreate ;
+    
+    private static long currentId = 0;
 
     void config(@Observes StartupEvent ev) {
         if (schemaCreate) {
@@ -62,7 +64,9 @@ public class LoyaltycardResource {
 
     @POST
     public Uni<Response> create(Loyaltycard loyaltycard) {
-        return loyaltycard.save(client , loyaltycard.idCustomer , loyaltycard.idShop)
+        currentId++;
+        Loyaltycard newLoyaltycard = new Loyaltycard(currentId, loyaltycard.idCustomer, loyaltycard.idShop);
+        return loyaltycard.save(client , newLoyaltycard.idCustomer , newLoyaltycard.idShop)
                 .onItem().transform(id -> URI.create("/loyaltycard/" + id))
                 .onItem().transform(uri -> Response.created(uri).build());
     }
