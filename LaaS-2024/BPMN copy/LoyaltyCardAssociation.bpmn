@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_04s1gz9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:collaboration id="Collaboration_08ixn56">
+    <bpmn:participant id="Participant_1" name="LoyaltyCard ACTOR" processRef="Process_0j5s0hk" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0j5s0hk" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0e8u1er">
+      <bpmn:lane id="Lane_Executor" name="LoyaltyCard Executor">
+        <bpmn:flowNodeRef>Activity_1fmgg2w</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_67317895-66a5-4c33-a4bc-0bebc6a11de6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_8d375442-d52a-4e2f-bf77-6b72b28b8fe2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0kejpwv</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Initiator" name="LoyaltyCard Initiator">
+        <bpmn:flowNodeRef>Activity_9841ec7e-705e-4a46-9924-61aed9dc6c00</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0cg3929</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1wpmvk8</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1sfmydf</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0df58b5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1dupxs3</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:serviceTask id="Activity_1fmgg2w" name="Retrieve LoyaltyCard&#39;s already associated shops">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="url">http://ec2-34-207-111-155.compute-1.amazonaws.com:8080/LoyaltyCardShops</camunda:inputParameter>
+            <camunda:outputParameter name="LoyaltyCardShopsList">
+              <camunda:script scriptFormat="JavaScript">S(connector.getVariable("response"));</camunda:script>
+            </camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0r5l9ad</bpmn:incoming>
+      <bpmn:outgoing>Flow_1lmt51n</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_67317895-66a5-4c33-a4bc-0bebc6a11de6" name="Verify if Shop association is possible" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="LoyaltyCardShopsList" label="The already associated shops to this LoyaltyCards are" type="string" />
+          <camunda:formField id="IsPossible" label="IsPossible" type="boolean" defaultValue="true" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1lmt51n</bpmn:incoming>
+      <bpmn:outgoing>Flow_15zm72r</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_8d375442-d52a-4e2f-bf77-6b72b28b8fe2" name="Associate the Shop to LoyaltyCard">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="url">http://ec2-3-235-181-156.compute-1.amazonaws.com:8080/LoyaltyCardShops</camunda:inputParameter>
+            <camunda:inputParameter name="payload">{
+  "loyaltycardid":${LoyaltyCardID},
+  "shopname":"${ShopName}",
+}</camunda:inputParameter>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+                <camunda:entry key="accept">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_15zm72r</bpmn:incoming>
+      <bpmn:outgoing>Flow_03z1hki</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_9841ec7e-705e-4a46-9924-61aed9dc6c00" name="Decide the Shop to LoyaltyCard association order" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="ShopList" label="Here are the available shops" type="string" />
+          <camunda:formField id="LoyaltyCardList" label="Choice of the LoyaltyCard for the association" type="string" />
+          <camunda:formField id="LoyaltyCardID" label="LoyaltyCard ID" type="string" />
+          <camunda:formField id="ShopName" label="Shop to associate to the loyalty card" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0pezywp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yj35mx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:task id="Activity_0cg3929" name="Request Shop association order">
+      <bpmn:incoming>Flow_0yj35mx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0r5l9ad</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_0kejpwv" name="Declare Shop association order">
+      <bpmn:incoming>Flow_03z1hki</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ogiyux</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="Activity_1wpmvk8" name="Check Shop association order" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="productok" label="productok" type="boolean" defaultValue="true" />
+          <camunda:formField id="LoyaltyCardList" label="The new LoyaltyCard list is" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_12vjru5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pu38ol</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_1">
+      <bpmn:incoming>Flow_0pu38ol</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_1sfmydf" name="Retrieve Shop catalog">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="url">http://ec2-34-207-111-155.compute-1.amazonaws.com:8080/Shop</camunda:inputParameter>
+            <camunda:outputParameter name="ShopList">
+              <camunda:script scriptFormat="JavaScript">S(connector.getVariable("response"));</camunda:script>
+            </camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1aiidgw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pezywp</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0df58b5" name="Retrieve LoyaltyCard catalog">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="url">http://ec2-34-207-111-155.compute-1.amazonaws.com:8080/LoyaltyCard</camunda:inputParameter>
+            <camunda:outputParameter name="LoyaltyCardList">
+              <camunda:script scriptFormat="JavaScript">S(connector.getVariable("response"));</camunda:script>
+            </camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1aiidgw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0r5l9ad" sourceRef="Activity_0cg3929" targetRef="Activity_1fmgg2w" />
+    <bpmn:sequenceFlow id="Flow_1lmt51n" sourceRef="Activity_1fmgg2w" targetRef="Activity_67317895-66a5-4c33-a4bc-0bebc6a11de6" />
+    <bpmn:sequenceFlow id="Flow_15zm72r" sourceRef="Activity_67317895-66a5-4c33-a4bc-0bebc6a11de6" targetRef="Activity_8d375442-d52a-4e2f-bf77-6b72b28b8fe2" />
+    <bpmn:sequenceFlow id="Flow_03z1hki" sourceRef="Activity_8d375442-d52a-4e2f-bf77-6b72b28b8fe2" targetRef="Activity_0kejpwv" />
+    <bpmn:sequenceFlow id="Flow_0pezywp" sourceRef="Activity_1sfmydf" targetRef="Activity_9841ec7e-705e-4a46-9924-61aed9dc6c00" />
+    <bpmn:sequenceFlow id="Flow_0yj35mx" sourceRef="Activity_9841ec7e-705e-4a46-9924-61aed9dc6c00" targetRef="Activity_0cg3929" />
+    <bpmn:sequenceFlow id="Flow_0ogiyux" sourceRef="Activity_0kejpwv" targetRef="Activity_1dupxs3" />
+    <bpmn:sequenceFlow id="Flow_0pu38ol" sourceRef="Activity_1wpmvk8" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="Flow_1aiidgw" sourceRef="Activity_0df58b5" targetRef="Activity_1sfmydf" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_0df58b5" />
+    <bpmn:serviceTask id="Activity_1dupxs3" name="Retrieve LoyaltyCard&#39;s associated shops">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="url">http://ec2-34-207-111-155.compute-1.amazonaws.com:8080/LoyaltyCardShops</camunda:inputParameter>
+            <camunda:outputParameter name="LoyaltyCardShopsList">
+              <camunda:script scriptFormat="JavaScript">S(connector.getVariable("response"));</camunda:script>
+            </camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ogiyux</bpmn:incoming>
+      <bpmn:outgoing>Flow_12vjru5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_12vjru5" sourceRef="Activity_1dupxs3" targetRef="Activity_1wpmvk8" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_08ixn56">
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1580" height="300" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Executor_di" bpmnElement="Lane_Executor" isHorizontal="true">
+        <dc:Bounds x="190" y="230" width="1550" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Initiator_di" bpmnElement="Lane_Initiator" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1550" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1kvz5jk" bpmnElement="Activity_1fmgg2w" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="815" y="258" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1btow3i_di" bpmnElement="Activity_67317895-66a5-4c33-a4bc-0bebc6a11de6">
+        <dc:Bounds x="980" y="258" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t6tehd_di" bpmnElement="Activity_8d375442-d52a-4e2f-bf77-6b72b28b8fe2" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1140" y="258" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_194vcwc_di" bpmnElement="Activity_9841ec7e-705e-4a46-9924-61aed9dc6c00">
+        <dc:Bounds x="660" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cg3929_di" bpmnElement="Activity_0cg3929">
+        <dc:Bounds x="815" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0kejpwv_di" bpmnElement="Activity_0kejpwv">
+        <dc:Bounds x="1320" y="258" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_02aayf4" bpmnElement="Activity_1wpmvk8">
+        <dc:Bounds x="1500" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="1672" y="130" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="893" y="289" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1qvexb8" bpmnElement="Activity_1sfmydf" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="510" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="130" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="193" y="139" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0b6cy76" bpmnElement="Activity_0df58b5" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="340" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1k9srne" bpmnElement="Activity_1dupxs3" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+        <dc:Bounds x="1320" y="108" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0r5l9ad_di" bpmnElement="Flow_0r5l9ad">
+        <di:waypoint x="865" y="188" />
+        <di:waypoint x="865" y="258" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1lmt51n_di" bpmnElement="Flow_1lmt51n">
+        <di:waypoint x="915" y="298" />
+        <di:waypoint x="980" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15zm72r_di" bpmnElement="Flow_15zm72r">
+        <di:waypoint x="1080" y="298" />
+        <di:waypoint x="1140" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03z1hki_di" bpmnElement="Flow_03z1hki">
+        <di:waypoint x="1240" y="298" />
+        <di:waypoint x="1320" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pezywp_di" bpmnElement="Flow_0pezywp">
+        <di:waypoint x="610" y="148" />
+        <di:waypoint x="660" y="148" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yj35mx_di" bpmnElement="Flow_0yj35mx">
+        <di:waypoint x="760" y="148" />
+        <di:waypoint x="815" y="148" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ogiyux_di" bpmnElement="Flow_0ogiyux">
+        <di:waypoint x="1370" y="258" />
+        <di:waypoint x="1370" y="188" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pu38ol_di" bpmnElement="Flow_0pu38ol">
+        <di:waypoint x="1600" y="148" />
+        <di:waypoint x="1672" y="148" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1aiidgw_di" bpmnElement="Flow_1aiidgw">
+        <di:waypoint x="440" y="148" />
+        <di:waypoint x="510" y="148" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="278" y="148" />
+        <di:waypoint x="340" y="148" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12vjru5_di" bpmnElement="Flow_12vjru5">
+        <di:waypoint x="1420" y="148" />
+        <di:waypoint x="1500" y="148" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
