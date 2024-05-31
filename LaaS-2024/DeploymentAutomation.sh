@@ -179,7 +179,7 @@ cd ..
 
 
 # Create all KONG services and routes
-kong_admin_url="http://"$addressKong":8001"
+kong_admin_url="http://$addressKong:8001"
 create_service_and_route() {
   local service_name=$1
   local service_url=$2
@@ -207,7 +207,15 @@ create_service_and_route "discountcoupon-service" "http://$addressDiscountcoupon
 create_service_and_route "crosssell-service" "http://$addressCrosssellMS:8080" "/Crosssell(/.*)?"
 create_service_and_route "selledproduct-service" "http://$addressSelledproductMS:8080" "/Selledproduct(/.*)?"
 
-kong_admin_url="http://ec2-18-207-125-198.compute-1.amazonaws.com:8001"
+# Create services and routes without (/.*)?
+create_service_and_route "customer-service" "http://$addressCustomerMS:8080" "/Customer"
+create_service_and_route "purchase-service" "http://$addressPurchaseMS:8080" "/Purchase"
+create_service_and_route "shop-service" "http://$addressShopMS:8080" "/Shop"
+create_service_and_route "loyaltycard-service" "http://$addressLoyaltycardMS:8080" "/Loyaltycard"
+create_service_and_route "discountcoupon-service" "http://$addressDiscountcouponMS:8080" "/Discountcoupon"
+create_service_and_route "crosssell-service" "http://$addressCrosssellMS:8080" "/Crosssell"
+create_service_and_route "selledproduct-service" "http://$addressSelledproductMS:8080" "/Selledproduct"
+
 
 #  # Create services and routes with more flexible paths
 #  create_service_and_route "customer-service" "http://ec2-54-144-66-21.compute-1.amazonaws.com:8080" "/Customer(/.*)?"

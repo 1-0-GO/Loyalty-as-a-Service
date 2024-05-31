@@ -1,5 +1,5 @@
-kong_admin_url="http://ec2-18-207-125-198.compute-1.amazonaws.com:8001"
-
+# Create all KONG services and routes
+kong_admin_url="http://ec2-54-204-107-185.compute-1.amazonaws.com:8001"
 create_service_and_route() {
   local service_name=$1
   local service_url=$2
@@ -18,9 +18,20 @@ create_service_and_route() {
     --data "strip_path=false"
 }
 
-# Create services and routes with more flexible paths
-create_service_and_route "customer-service" "http://ec2-54-144-66-21.compute-1.amazonaws.com:8080" "/Customer(/.*)?"
-create_service_and_route "loyaltycard-service" "http://ec2-54-144-66-21.compute-1.amazonaws.com:9000" "/Loyaltycard(/.*)?"
-create_service_and_route "discountcoupon-service" "http://ec2-54-198-132-246.compute-1.amazonaws.com:8080" "/Discountcoupon(/.*)?"
-create_service_and_route "crosssell-service" "http://ec2-3-89-84-137.compute-1.amazonaws.com:8080" "/Crosssell(/.*)?"
-create_service_and_route "selledproduct-service" "http://ec2-34-239-138-75.compute-1.amazonaws.com:8080" "/Selledproduct(/.*)?"
+# Create services and routes
+create_service_and_route "customer-service" "http://ec2-54-159-68-51.compute-1.amazonaws.com:8080" "/Customer(/.*)?"
+create_service_and_route "purchase-service" "http://ec2-174-129-102-72.compute-1.amazonaws.com:8080" "/Purchase(/.*)?"
+create_service_and_route "shop-service" "http://ec2-174-129-102-72.compute-1.amazonaws.com:9000" "/Shop(/.*)?"
+create_service_and_route "loyaltycard-service" "http://ec2-54-159-68-51.compute-1.amazonaws.com:9000" "/Loyaltycard(/.*)?"
+create_service_and_route "discountcoupon-service" "http://ec2-3-81-205-122.compute-1.amazonaws.com:8080" "/Discountcoupon(/.*)?"
+create_service_and_route "crosssell-service" "http://ec2-18-212-150-122.compute-1.amazonaws.com:8080" "/Crosssell(/.*)?"
+create_service_and_route "selledproduct-service" "http://ec2-3-92-54-126.compute-1.amazonaws.com:8080" "/Selledproduct(/.*)?"
+
+# Create services and routes
+create_service_and_route "customer-service" "http://ec2-54-159-68-51.compute-1.amazonaws.com:8080" "/Customer"
+create_service_and_route "purchase-service" "http://ec2-174-129-102-72.compute-1.amazonaws.com:8080" "/Purchase"
+create_service_and_route "shop-service" "http://ec2-174-129-102-72.compute-1.amazonaws.com:9000" "/Shop"
+create_service_and_route "loyaltycard-service" "http://ec2-54-159-68-51.compute-1.amazonaws.com:9000" "/Loyaltycard"
+create_service_and_route "discountcoupon-service" "http://ec2-3-81-205-122.compute-1.amazonaws.com:8080" "/Discountcoupon"
+create_service_and_route "crosssell-service" "http://ec2-18-212-150-122.compute-1.amazonaws.com:8080" "/Crosssell"
+create_service_and_route "selledproduct-service" "http://ec2-3-92-54-126.compute-1.amazonaws.com:8080" "/Selledproduct"
