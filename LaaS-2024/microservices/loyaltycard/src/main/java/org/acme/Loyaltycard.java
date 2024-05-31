@@ -8,61 +8,79 @@ import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
 
 public class Loyaltycard {
-	
-	    public Long id;
-		public Long idCustomer;
-		public Long idShop;
 
-	    public Loyaltycard() {
-	    }
+    public Long id;
+    public Long idCustomer;
+    public Long idShop;
 
-		public Loyaltycard(Long id, Long idCustomer, Long idShop) {
-			this.id = id;
-			this.idCustomer = idCustomer;
-			this.idShop = idShop;
-		}
+    public Loyaltycard() {
+    }
 
-		@Override
-		public String toString() {
-			return "{id:" + id + ", idCustomer:" + idCustomer + ", idShop:" + idShop + "}\n";
-		}
+    public Loyaltycard(Long id, Long idCustomer, Long idShop) {
+        this.id = id;
+        this.idCustomer = idCustomer;
+        this.idShop = idShop;
+    }
 
-		private static Loyaltycard from(Row row) {
-	        return new Loyaltycard(row.getLong("id"), row.getLong("idCustomer") , row.getLong("idShop"));
-	    }
-	    
-	    public static Multi<Loyaltycard> findAll(MySQLPool client) {
-	        return client.query("SELECT id, idCustomer, idShop  FROM LoyaltyCards ORDER BY id ASC").execute()
-	                .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
-	                .onItem().transform(Loyaltycard::from);
-	    }
-	    
-	    public static Uni<Loyaltycard> findById(MySQLPool client, Long id) {
-	        return client.preparedQuery("SELECT id, idCustomer, idShop  FROM LoyaltyCards WHERE id = ?").execute(Tuple.of(id)) 
-	                .onItem().transform(RowSet::iterator) 
-	                .onItem().transform(iterator -> iterator.hasNext() ? from(iterator.next()) : null); 
-	    }
+    @Override
+    public String toString() {
+        return "{id:" + id + ", idCustomer:" + idCustomer + ", idShop:" + idShop + "}\n";
+    }
 
-		public static Uni<Loyaltycard> findById2(MySQLPool client, Long idCustomer , Long idShop) {
-	        return client.preparedQuery("SELECT id, idCustomer, idShop FROM LoyaltyCards WHERE idCustomer = ? AND idShop = ?").execute(Tuple.of(idCustomer , idShop)) 
-	                .onItem().transform(RowSet::iterator) 
-	                .onItem().transform(iterator -> iterator.hasNext() ? from(iterator.next()) : null); 
-					
-	    }
+    private static Loyaltycard fromCustomer(Row row) {
+        return new Loyaltycard(row.getLong("id"), row.getLong("idCustomer"), null);
+    }
 
-	    public Uni<Boolean> save(MySQLPool client , Long idCustomer_R , Long idShop_R) 
-		{
-	        return client.preparedQuery("INSERT INTO LoyaltyCards(idCustomer,idShop) VALUES (?,?)").execute(Tuple.of(idCustomer_R , idShop_R))
-	        		.onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1 ); 
-	    }
-	    
-	    public static Uni<Boolean> delete(MySQLPool client, Long id_R) {
-	        return client.preparedQuery("DELETE FROM LoyaltyCards WHERE id = ?").execute(Tuple.of(id_R))
-	                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1); 
-	    }
-	    
-	    public static Uni<Boolean> update(MySQLPool client, Long id_R, Long idCustomer_R , Long idShop_R ) {
-	        return client.preparedQuery("UPDATE LoyaltyCards SET idCustomer = ? , idShop = ? WHERE id = ?").execute(Tuple.of(idCustomer_R,idShop_R,id_R))
-	        		.onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1 ); 
-	    }  
+    private static Loyaltycard fromShop(Row row) {
+        return new Loyaltycard(row.getLong("id"), null, row.getLong("idShop"));
+    }
+
+    public static Multi<Loyaltycard> findAllCustomers(MySQLPool client) {
+        return client.query("SELECT id, idCustomer FROM CustomerCards ORDER BY id ASC").execute()
+                .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
+                .onItem().transform(Loyaltycard::fromCustomer);
+    }
+
+    public static Multi<Loyaltycard> findAllShops(MySQLPool client) {
+        return client.query("SELECT id, idShop FROM ShopCards ORDER BY id ASC").execute()
+                .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
+                .onItem().transform(Loyaltycard::fromShop);
+    }
+
+    public static Uni<Loyaltycard> findCustomerById(MySQLPool client, Long id) {
+        return client.preparedQuery("SELECT id, idCustomer FROM CustomerCards WHERE id = ?").execute(Tuple.of(id))
+                .onItem().transform(RowSet::iterator)
+                .onItem().transform(iterator -> iterator.hasNext() ? fromCustomer(iterator.next()) : null);
+    }
+
+    public static Uni<Loyaltycard> findShopById(MySQLPool client, Long id) {
+        return client.preparedQuery("SELECT id, idShop FROM ShopCards WHERE id = ?").execute(Tuple.of(id))
+                .onItem().transform(RowSet::iterator)
+                .onItem().transform(iterator -> iterator.hasNext() ? fromShop(iterator.next()) : null);
+    }
+
+    public Uni<Boolean> saveCustomer(MySQLPool client, Long idCustomer) {
+        return client.preparedQuery("INSERT INTO CustomerCards(idCustomer) VALUES (?)").execute(Tuple.of(idCustomer))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
+    }
+
+    public Uni<Boolean> saveShop(MySQLPool client, Long id, Long idShop) {
+        return client.preparedQuery("INSERT INTO ShopCards(id, idShop) VALUES (?, ?)").execute(Tuple.of(id, idShop))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
+    }
+
+    public static Uni<Boolean> deleteCustomer(MySQLPool client, Long id) {
+        return client.preparedQuery("DELETE FROM CustomerCards WHERE id = ?").execute(Tuple.of(id))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
+    }
+
+    public static Uni<Boolean> deleteShop(MySQLPool client, Long id) {
+        return client.preparedQuery("DELETE FROM ShopCards WHERE id = ?").execute(Tuple.of(id))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
+    }
+
+    public static Uni<Boolean> updateShop(MySQLPool client, Long id, Long idShop) {
+        return client.preparedQuery("UPDATE ShopCards SET idShop = ? WHERE id = ?").execute(Tuple.of(idShop, id))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
+    }
 }

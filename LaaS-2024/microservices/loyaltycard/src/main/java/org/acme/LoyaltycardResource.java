@@ -20,7 +20,7 @@ public class LoyaltycardResource {
     
     @Inject
     @ConfigProperty(name = "myapp.schema.create", defaultValue = "true") 
-    boolean schemaCreate ;
+    boolean schemaCreate;
     
     private static long currentId = 0;
 
@@ -31,60 +31,81 @@ public class LoyaltycardResource {
     }
     
     private void initdb() {
-        // In a production environment this configuration SHOULD NOT be used
-        client.query("DROP TABLE IF EXISTS LoyaltyCards").execute()
-        .flatMap(r -> client.query("CREATE TABLE LoyaltyCards (id SERIAL PRIMARY KEY, idCustomer BIGINT UNSIGNED, idShop BIGINT UNSIGNED, CONSTRAINT UC_Loyal UNIQUE (idCustomer,idShop))").execute())
-        .flatMap(r -> client.query(" INSERT INTO LoyaltyCards (idCustomer,idShop) VALUES (1,1)").execute())
-        .flatMap(r -> client.query(" INSERT INTO LoyaltyCards (idCustomer,idShop) VALUES (2,1)").execute())
-        .flatMap(r -> client.query(" INSERT INTO LoyaltyCards (idCustomer,idShop) VALUES (1,3)").execute())
-        .flatMap(r -> client.query(" INSERT INTO LoyaltyCards (idCustomer,idShop) VALUES (4,2)").execute())
+        client.query("DROP TABLE IF EXISTS CustomerCards, ShopCards").execute()
+        .flatMap(r -> client.query("CREATE TABLE CustomerCards (id SERIAL PRIMARY KEY, idCustomer BIGINT UNSIGNED)").execute())
+        .flatMap(r -> client.query("CREATE TABLE ShopCards (id SERIAL PRIMARY KEY, idShop BIGINT UNSIGNED)").execute())
+        .flatMap(r -> client.query("INSERT INTO CustomerCards (idCustomer) VALUES (1), (2), (1), (4)").execute())
+        .flatMap(r -> client.query("INSERT INTO ShopCards (id, idShop) VALUES (1, 1), (2, 1), (3, 3), (4, 2)").execute())
         .await().indefinitely();
     }
-    
+
     @GET
-    public Multi<Loyaltycard> get() {
-        return Loyaltycard.findAll(client);
+    @Path("customers")
+    public Multi<Loyaltycard> getAllCustomers() {
+        return Loyaltycard.findAllCustomers(client);
     }
-    
+
     @GET
-    @Path("{id}")
-    public Uni<Response> getSingle(Long id) {
-        return Loyaltycard.findById(client, id)
-                .onItem().transform(loyaltycard -> loyaltycard != null ? Response.ok(loyaltycard) : Response.status(Response.Status.NOT_FOUND)) 
-                .onItem().transform(ResponseBuilder::build); 
+    @Path("shops")
+    public Multi<Loyaltycard> getAllShops() {
+        return Loyaltycard.findAllShops(client);
     }
-     
+
     @GET
-    @Path("{idCustomer}/{idShop}")
-    public Uni<Response> getDual(Long idCustomer, Long idShop) {
-        return Loyaltycard.findById2(client, idCustomer, idShop)
-                .onItem().transform(loyaltycard -> loyaltycard != null ? Response.ok(loyaltycard) : Response.status(Response.Status.NOT_FOUND)) 
-                .onItem().transform(ResponseBuilder::build); 
+    @Path("customers/{id}")
+    public Uni<Response> getCustomerById(@PathParam("id") Long id) {
+        return Loyaltycard.findCustomerById(client, id)
+                .onItem().transform(loyaltycard -> loyaltycard != null ? Response.ok(loyaltycard) : Response.status(Response.Status.NOT_FOUND))
+                .onItem().transform(Response.ResponseBuilder::build);
+    }
+
+    @GET
+    @Path("shops/{id}")
+    public Uni<Response> getShopById(@PathParam("id") Long id) {
+        return Loyaltycard.findShopById(client, id)
+                .onItem().transform(loyaltycard -> loyaltycard != null ? Response.ok(loyaltycard) : Response.status(Response.Status.NOT_FOUND))
+                .onItem().transform(Response.ResponseBuilder::build);
     }
 
     @POST
-    public Uni<Response> create(Loyaltycard loyaltycard) {
+    @Path("customers")
+    public Uni<Response> createCustomer(Loyaltycard loyaltycard) {
         currentId++;
-        Loyaltycard newLoyaltycard = new Loyaltycard(currentId, loyaltycard.idCustomer, loyaltycard.idShop);
-        return loyaltycard.save(client , newLoyaltycard.idCustomer , newLoyaltycard.idShop)
-                .onItem().transform(id -> URI.create("/loyaltycard/" + id))
+        return loyaltycard.saveCustomer(client, loyaltycard.idCustomer)
+                .onItem().transform(id -> URI.create("/Loyaltycard/customers/" + currentId))
                 .onItem().transform(uri -> Response.created(uri).build());
     }
-    
+
+    @POST
+    @Path("shops")
+    public Uni<Response> createShop(Loyaltycard loyaltycard) {
+        currentId++;
+        return loyaltycard.saveShop(client, currentId, loyaltycard.idShop)
+                .onItem().transform(id -> URI.create("/Loyaltycard/shops/" + currentId))
+                .onItem().transform(uri -> Response.created(uri).build());
+    }
+
     @DELETE
-    @Path("{id}")
-    public Uni<Response> delete(Long id) {
-        return Loyaltycard.delete(client, id)
+    @Path("customers")
+    public Uni<Response> deleteCustomer(Loyaltycard loyaltycard) {
+        return Loyaltycard.deleteCustomer(client, loyaltycard.id)
+                .onItem().transform(deleted -> deleted ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
+                .onItem().transform(status -> Response.status(status).build());
+    }
+
+    @DELETE
+    @Path("shops")
+    public Uni<Response> deleteShop(Loyaltycard loyaltycard) {
+        return Loyaltycard.deleteShop(client, loyaltycard.id)
                 .onItem().transform(deleted -> deleted ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
                 .onItem().transform(status -> Response.status(status).build());
     }
 
     @PUT
-    @Path("/{id}/{idCustomer}/{idShop}")
-    public Uni<Response> update(Long id , Long idCustomer , Long idShop ) {
-        return Loyaltycard.update(client, id, idCustomer , idShop )
+    @Path("shops")
+    public Uni<Response> updateShop(Loyaltycard loyaltycard) {
+        return Loyaltycard.updateShop(client, loyaltycard.id, loyaltycard.idShop)
                 .onItem().transform(updated -> updated ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
                 .onItem().transform(status -> Response.status(status).build());
     }
-    
 }

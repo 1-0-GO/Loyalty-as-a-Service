@@ -10,25 +10,13 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
+import org.json.JSONObject;
 
 @Path("SelledProduct")
 public class SelledProductResources {
-
     @Inject
-    @Channel("soldProductsbyCoupon")
-    Emitter<String> soldProductsbyCouponEmitter;
-
-    @Inject
-    @Channel("soldProductsbyLocation")
-    Emitter<String> soldProductsbyLocationEmitter;
-
-    @Inject
-    @Channel("soldProductsbyShop")
-    Emitter<String> soldProductsbyShopEmitter;
-
-    @Inject
-    @Channel("soldProductsbyLoyaltyCard")
-    Emitter<String> soldProductsbyLoyaltyCardEmitter;
+    @Channel("soldProducts")
+    Emitter<String> soldProductsEmitter;
 
     @POST
     @Path("/emit")
@@ -36,19 +24,25 @@ public class SelledProductResources {
     @Produces(MediaType.TEXT_PLAIN)
     public Response emitSelledProduct(List<SelledProduct> selledProducts) {
         for (SelledProduct product : selledProducts) {
-            var soldProductsbyLocation = product.product + "-" + product.supplier;
-            var soldProductsbyShop = product.product + "-" + product.shop_name;
-            var soldProductsbyLoyaltyCard = product.product + "-" + product.loyaltyCard_id;
+            JSONObject purchaseEvent = new JSONObject();
+            purchaseEvent.put("TimeStamp", product.timestamp.toString());
+            purchaseEvent.put("LoyaltyCard_ID", product.loyaltyCard_id.toString());
+            purchaseEvent.put("Price", product.price.toString());
+            purchaseEvent.put("Product", product.product);
+            purchaseEvent.put("Supplier", product.supplier);
+            purchaseEvent.put("Shop", product.shop_name);
 
-            // Emitting messages to respective topics
-            sendMessageToTopic(soldProductsbyLocation, soldProductsbyLocationEmitter);
-            sendMessageToTopic(soldProductsbyShop, soldProductsbyShopEmitter);
-            sendMessageToTopic(soldProductsbyLoyaltyCard, soldProductsbyLoyaltyCardEmitter);
+            JSONObject event = new JSONObject();
+            event.put("Purchase_Event", purchaseEvent);
+
+            String topicName = "soldProducts_" + product.product + "_" + product.shop_name;
+            sendMessageToTopic(event.toString(), topicName);
         }
         return Response.ok("Products processed").build();
     }
 
-    private void sendMessageToTopic(String message, Emitter<String> emitter) {
-        emitter.send(message);
+    private void sendMessageToTopic(String message, String topicName) {
+        // Emit message to the dynamically created topic
+        soldProductsEmitter.send(topicName + ":" + message);
     }
 }
