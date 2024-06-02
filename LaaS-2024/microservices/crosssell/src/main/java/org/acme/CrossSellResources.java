@@ -1,5 +1,9 @@
 package org.acme;
 
+// import org.apache.kafka.clients.consumer.KafkaConsumer;
+// import org.apache.kafka.clients.producer.KafkaProducer; 
+// import org.apache.kafka.clients.producer.ProducerRecord; 
+
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import jakarta.ws.rs.Consumes;
@@ -26,6 +30,10 @@ public class CrossSellResources {
         try {
             // Create a new CrossSell object
             CrossSell crossSell = new CrossSell(purchases.get(0).loyaltyCard_id, purchases);
+            // String message = "{\"Purchase_Event\":{" +			
+			// 		"\"LoyaltyCard_ID\":\"" + crossSell.loyaltyCard_id + "\"," +  
+			// 		"\"Shop\":\"" + crossSell.shop_name + "\"" +
+		    //         "}}";
             recommendEmitter.send(crossSell); // to json to string
             return Response.ok("recommendation emitted").build();
         } catch (Exception e) {
