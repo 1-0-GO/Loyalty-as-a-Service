@@ -33,7 +33,7 @@ public class LoyaltycardResource {
     private void initdb() {
         client.query("DROP TABLE IF EXISTS CustomerCards, ShopCards").execute()
         .flatMap(r -> client.query("CREATE TABLE CustomerCards (id SERIAL PRIMARY KEY, idCustomer BIGINT UNSIGNED)").execute())
-        .flatMap(r -> client.query("CREATE TABLE ShopCards (id SERIAL PRIMARY KEY, idShop BIGINT UNSIGNED)").execute())
+        .flatMap(r -> client.query("CREATE TABLE ShopCards (id BIGINT UNSIGNED NOT NULL, idShop BIGINT UNSIGNED NOT NULL, PRIMARY KEY (id, idShop))").execute())
         .flatMap(r -> client.query("INSERT INTO CustomerCards (idCustomer) VALUES (1), (2), (1), (4)").execute())
         .flatMap(r -> client.query("INSERT INTO ShopCards (id, idShop) VALUES (1, 1), (2, 1), (3, 3), (4, 2)").execute())
         .await().indefinitely();
@@ -79,9 +79,8 @@ public class LoyaltycardResource {
     @POST
     @Path("shops")
     public Uni<Response> createShop(Loyaltycard loyaltycard) {
-        currentId++;
-        return loyaltycard.saveShop(client, currentId, loyaltycard.idShop)
-                .onItem().transform(id -> URI.create("/Loyaltycard/shops/" + currentId))
+        return loyaltycard.saveShop(client, loyaltycard.id, loyaltycard.idShop)
+                .onItem().transform(id -> URI.create("/Loyaltycard/shops/" + loyaltycard.id))
                 .onItem().transform(uri -> Response.created(uri).build());
     }
 
